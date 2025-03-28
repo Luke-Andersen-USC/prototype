@@ -222,11 +222,12 @@ public class Outline : MonoBehaviour {
   List<Vector3> SmoothNormals(Mesh mesh) {
 
     // Group vertices by location
-    var groups = mesh.vertices.Select((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index)).GroupBy(pair => pair.Key);
+    //var groups = mesh.vertices.Select((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index)).GroupBy(pair => pair.Key);
 
     // Copy normals to a new list
     var smoothNormals = new List<Vector3>(mesh.normals);
 
+    /*
     // Average normals for grouped vertices
     foreach (var group in groups) {
 
@@ -249,6 +250,7 @@ public class Outline : MonoBehaviour {
         smoothNormals[pair.Value] = smoothNormal;
       }
     }
+    */
 
     return smoothNormals;
   }

@@ -30,34 +30,15 @@ public class Board : MonoBehaviour
     // Materials for debug purposes
     public Material defaultTileMat;
     public Material selectedTileMat;
-    public Material hoveredTileMat;
-    public Material objectiveTileMat;
-    public Material extractTileMat;
-    public Material hazardTileMat;
-    public Material obstacleTileMat;
-    public Material deployTileMat;
 
     //Max number of rows and cols a level can have
     public static readonly int NUM_ROWS = 20;
     public static readonly int NUM_COLS = 10;
     
-    [HideInInspector] public Tuple<Vector3, Vector3> LevelBounds;
-    private int LevelBoundsBuffer = 5;
-
     // Data to store tiles properly
     public Tile[,] Tiles;
     public Dictionary<Tile, GameObject> tileToGameObjectMap;
     public Dictionary<GameObject, Tile> gameObjectToTileMap;   
-    public List<Tile> spawnTiles;
-    //References to selected and previously selected tiles
-    [HideInInspector] public Tile selectedTile;
-    private Tile previouslySelectedTile;
-    private Tile hoveredTile;
-    private Tile previouslyHoveredTile;
-    
-    // keep track of the highlighted tiles so we can erase them from the scene
-    private List<Tile> highlightedTiles = new List<Tile>();
-    private List<GameObject> outlines = new List<GameObject>();
 
     [SerializeField] private GameObject outlinePrefab;
 
@@ -161,11 +142,6 @@ public class Board : MonoBehaviour
 
                         tile.SetupTile(this, row, col);
                         tile.UpdateMaterial();
-
-                        if (tile.Type == TileType.DEPLOY)
-                        {
-                            tools.spawnTiles.Add(tile);
-                        }
 
                         tools.AddTileToData(tile);
                     }

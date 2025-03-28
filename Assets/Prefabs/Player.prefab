@@ -114,7 +114,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       propertyPath: m_Name
-      value: Barbarian
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       propertyPath: m_IsActive
@@ -122,7 +122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       propertyPath: m_TagString
-      value: Weighted
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4040555663191694918, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       propertyPath: m_Enabled
@@ -153,6 +153,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6555349537186643641}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4775184625270408633}
   m_SourcePrefab: {fileID: 100100000, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
 --- !u!1 &2324268512029011990 stripped
 GameObject:
@@ -193,11 +196,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0596b4426aea44c3b9b18233e279c923, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shipDeck: {fileID: 0}
   moveSpeed: 8
   jumpForce: 20
   rotationSpeed: 90
   gravity: -10
+  PlayerInput: {fileID: 0}
+  m_inputAsset: {fileID: 0}
+  m_player:
+    m_Name: Player
+    m_Id: 081e5a64-7495-4079-95c9-ccbed9d5a8fd
+    m_Asset: {fileID: 0}
+    m_Actions: []
+    m_Bindings: []
 --- !u!143 &6555349537186643641
 CharacterController:
   m_ObjectHideFlags: 0
@@ -222,4 +232,34 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1.5, z: 0}
+--- !u!114 &4775184625270408633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2324268512029011990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 3
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: Gamepad
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

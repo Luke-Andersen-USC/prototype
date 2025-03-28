@@ -16,27 +16,7 @@ public class TileEditor : Editor
             tiles.Add((Tile)obj);
 
         EditorGUI.BeginChangeCheck();
-        TileType oldType = tiles[0].Type;
 
         DrawDefaultInspector();
-
-        //tile = (Tile)target;
-
-        //If type type changed, update material
-        if (EditorGUI.EndChangeCheck())
-        {
-            if (oldType != tiles[0].Type)
-            {
-                TileType newType = tiles[0].Type;
-                List<Object> origMats = new List<Object>();
-                foreach (Tile tile in tiles)
-                    origMats.Add(tile.gameObject.GetComponent<MeshRenderer>());
-                    
-                Undo.RecordObjects(origMats.ToArray(), "Changed Tile Type");
-
-                foreach (Tile tile in tiles)
-                    tile.UpdateMaterial();
-            }
-        }
     }
 }

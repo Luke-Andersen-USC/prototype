@@ -25,10 +25,6 @@ public class BoardEditor : Editor
         {
             SpawnDefaultTile();
         }
-        if (GUILayout.Button("Spawn Objective Tile"))
-        {
-            SpawnObjectiveTile();
-        }
         GUILayout.EndHorizontal();
 
         GUILayout.Space(25);
@@ -38,7 +34,6 @@ public class BoardEditor : Editor
         EditorGUILayout.HelpBox("Creates a " + Board.NUM_ROWS + "x" + Board.NUM_COLS + " rectangular map", MessageType.Info);
         if (GUILayout.Button("Generate Default Map"))
         {
-            //Undo.RegisterFullObjectHierarchyUndo(GameObject.FindGameObjectWithTag("BoardManager"), "Clear All Tiles");
             GenerateMap();
         }
 
@@ -64,25 +59,6 @@ public class BoardEditor : Editor
         tileObj.transform.SetParent(myBoard.transform); // Set the parent to myBoard
 
         Undo.RegisterCreatedObjectUndo(tileObj, "Spawned Tile");
-    }
-
-    //Spawns an objective tile at -2, -2
-    public void SpawnObjectiveTile()
-    {
-        Vector3 pos = new Vector3(Tile.SIDELEN * -2, 0, Tile.SIDELEN * -2);
-
-        // Use PrefabUtility.InstantiatePrefab to maintain prefab link
-        GameObject tilePrefab = myBoard.TilePrefab as GameObject; // Ensure this is the prefab you want to spawn
-        GameObject tileObj = PrefabUtility.InstantiatePrefab(tilePrefab) as GameObject;
-        tileObj.transform.position = pos;
-        tileObj.transform.rotation = Quaternion.identity;
-        tileObj.transform.SetParent(myBoard.transform); // Set the parent to myBoard
-
-        // Set tile type and material
-        tileObj.GetComponent<Tile>().Type = TileType.OBJECTIVE;
-        tileObj.GetComponent<MeshRenderer>().material = myBoard.objectiveTileMat;
-
-        Undo.RegisterCreatedObjectUndo(tileObj, "Spawned Objective Tile");
     }
 
     // Generating a random map as placeholder so i can see if map works, will need new system when levels are created

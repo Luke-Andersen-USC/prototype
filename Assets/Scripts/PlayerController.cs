@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,8 +16,6 @@ public class PlayerController : MonoBehaviour
     }
     
     // References
-    [SerializeField] private GameObject _shipDeck;
-    [SerializeField] private GameObject _balloonsPrefab;
 
     // Movement
     public float moveSpeed = 5f;
@@ -39,20 +39,26 @@ public class PlayerController : MonoBehaviour
     private Tile _selectedTile = null;
 
     private PlayerState _currentState = PlayerState.Idle;
-    void Start()
+    void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        //throw new NotImplementedException();
+    }
+
     void Update()
     {
         ProcessInput();
-        
-        Vector3 move = Vector3.Normalize(_shipDeck.transform.forward * _moveInput.y + _shipDeck.transform.right * _moveInput.x);
+
+        Transform shipDeckTransform = PlayerManager.Instance.ShipDeck.transform;
+        Vector3 move = Vector3.Normalize(shipDeckTransform.forward * _moveInput.y + shipDeckTransform.transform.right * _moveInput.x);
         if (move.magnitude > 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(move, _shipDeck.transform.up);
+            Quaternion targetRotation = Quaternion.LookRotation(move, shipDeckTransform.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             
             _characterController.Move(Time.deltaTime * moveSpeed * move);
@@ -81,19 +87,15 @@ public class PlayerController : MonoBehaviour
         //gameObject.transform.localRotation = Quaternion.identity;
 
         
-        if (Input.GetButtonDown("Fire3"))
+        if (i_interact.ReadValue<float>() > 0.1f)
         {
             SelectTileForBalloons();
         }
-
-        if (Input.GetKey(KeyCode.B))
-        {
-            SelectTileForBalloons();
-        }
-        if (Input.GetKeyUp(KeyCode.B))
+        else if (_selectedTile != null)
         {
             PlaceDownBalloon();
         }
+        
         
         switch (_currentState)
         {
@@ -114,9 +116,9 @@ public class PlayerController : MonoBehaviour
 
     private void ProcessInput()
     {
-        _moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        _isAttackPressed = Input.GetButtonDown("Fire1");
-        _isJumpPressed = Input.GetButtonDown("Jump");
+        _moveInput = i_move.ReadValue<Vector2>();
+        _isAttackPressed = i_attack.ReadValue<float>() > 0.1f;
+        _isJumpPressed = i_jump.ReadValue<float>() > 0.1f;
     }
 
     private void UpdateIdle()
@@ -202,31 +204,6 @@ public class PlayerController : MonoBehaviour
     
     private void SelectTileForBalloons()
     {
-        /*
-        if (_selectedTile != null) _selectedTile.Unhighlight();
-        
-        
-        RaycastHit[] hits = Physics.SphereCastAll(transform.position, 19.0f, transform.forward, 19.0f,
-            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
-        
-        Tile closestTile = null;
-        float closestAngle = float.MaxValue;
-        foreach (RaycastHit hit in hits)
-        {
-            if (hit.collider.CompareTag("Tile"))
-            {
-                Vector3 toTile = (hit.transform.position - transform.position).normalized;
-                float angle = Vector3.Angle(transform.forward, toTile);
-
-                if (angle < closestAngle)
-                {
-                    closestAngle = angle;
-                    closestTile = hit.transform.GetComponent<Tile>();
-                }
-            }
-        }
-        */
-
         Tile closestTile = null;
         float closestAngle = float.MaxValue;
         
@@ -238,6 +215,8 @@ public class PlayerController : MonoBehaviour
                 Tile tile = tiles[x, y];
                 tile.Unhighlight();
                  
+                if (tile.Balloon != null) continue;
+                
                 Vector3 toTile = tile.transform.position - transform.position;
 
                 if (toTile.magnitude < 2.0f)
@@ -268,13 +247,37 @@ public class PlayerController : MonoBehaviour
     {
         if (_selectedTile != null)
         {
-            GameObject balloon = Instantiate(_balloonsPrefab, _selectedTile.transform.position, Quaternion.identity);
-            balloon.transform.SetParent(transform.parent);
-            ShipController.Instance.Balloons.Add(balloon);
+            ShipController.Instance.PlaceBalloon(_selectedTile);
+            _selectedTile.Unhighlight();
         }
-        _selectedTile.Unhighlight();
         _selectedTile = null;
     }
     
     #endregion
+
+    public PlayerInput PlayerInput;
+    public InputDevice InputDevice;
+
+    [Header("Input Variables")]
+    public InputActionAsset m_inputAsset;
+    public InputActionMap m_player;
+    
+    private InputAction i_move;
+    private InputAction i_attack;
+    private InputAction i_interact;
+    private InputAction i_jump;
+
+    public void SetupInput(InputDevice inputDevice)
+    {
+        InputDevice = inputDevice;
+        PlayerInput = GetComponent<PlayerInput>();
+        
+        m_inputAsset = PlayerInput.actions;
+        m_player = m_inputAsset.FindActionMap("Player");
+        
+        i_move = m_player.FindAction("Move");
+        i_attack = m_player.FindAction("Attack");
+        i_interact = m_player.FindAction("Interact");
+        i_jump = m_player.FindAction("Jump");
+    }
 }
