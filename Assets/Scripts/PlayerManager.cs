@@ -35,5 +35,21 @@ public class PlayerManager : MonoBehaviour
             
             Debug.Log("Adding player: " + i);
         }
+
+        if (Gamepad.all.Count == 0)
+        {
+            GameObject player = Instantiate(_playerPrefab, _playerSpawns[0]);
+            player.transform.SetParent(transform);
+
+            PlayerController pc = player.GetComponent<PlayerController>();
+            if (pc != null)
+            {
+                pc.SetupInput(Keyboard.current);
+            }
+            
+            Players.Add(player);
+            
+            Debug.LogWarning("No controller input detected- adding keyboard player");
+        }
     }
 }

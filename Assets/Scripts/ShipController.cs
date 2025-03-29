@@ -222,6 +222,12 @@ public class ShipController : MonoBehaviour
         tile.Balloon = balloon;
     }
     
+    public void PopBalloon(GameObject balloon)
+    {
+        Balloons.Remove(balloon);
+        Destroy(balloon);
+    }
+    
     
 
     private void UpdateUI()
