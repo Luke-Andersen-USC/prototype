@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        _characterController.enableOverlapRecovery = true;
     }
 
     private void Start()
@@ -86,11 +87,6 @@ public class PlayerController : MonoBehaviour
         //characterController.Move(_verticalVelocity * Time.deltaTime * shipDeckTransform.up);
         _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
 
-        if (_isGrounded) 
-        {
-            //gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 0.5f, gameObject.transform.localPosition.z);
-        }
-
         //gameObject.transform.localRotation = Quaternion.identity;
 
         if (i_interact.ReadValue<float>() > 0.1f)
@@ -106,21 +102,15 @@ public class PlayerController : MonoBehaviour
         switch (_currentState)
         {
             case PlayerState.Idle:
-                //print("Idle");
-
                 UpdateIdle();
                 break;
             case PlayerState.Walking:
-                //print("Walking");
-
                 UpdateWalking();
                 break;
             case PlayerState.Jumping:
-                //print("Jumping");
                 UpdateJumping();
                 break;
             case PlayerState.Attacking:
-                //print("Attacking");
                 UpdateAttacking();
                 break;
         }
@@ -176,7 +166,8 @@ public class PlayerController : MonoBehaviour
     private void UpdateAttacking()
     {
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        if (!stateInfo.IsName("1H_Melee_Attack_Chop")  || stateInfo.normalizedTime >= 1.0f) 
+
+        if (stateInfo.normalizedTime >= 1.0f) 
         {
             SwitchState(PlayerState.Idle);
         }
