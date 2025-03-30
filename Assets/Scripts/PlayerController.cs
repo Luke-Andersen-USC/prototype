@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour
         Idle,
         Walking,
         Attacking,
-        Jumping
+        Jumping,
+        Falling
     }
     
     // References
@@ -82,11 +83,13 @@ public class PlayerController : MonoBehaviour
         }
         */
         
-        //_characterController.Move(_verticalVelocity * Time.deltaTime * _shipDeck.transform.up);
-        gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 0.5f, gameObject.transform.localPosition.z);
+        //characterController.Move(_verticalVelocity * Time.deltaTime * shipDeckTransform.up);
+        _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
+
+        //gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 0.5f, gameObject.transform.localPosition.z);
         //gameObject.transform.localRotation = Quaternion.identity;
 
-        
+
         if (i_interact.ReadValue<float>() > 0.1f)
         {
             SelectTileForBalloons();
@@ -100,15 +103,21 @@ public class PlayerController : MonoBehaviour
         switch (_currentState)
         {
             case PlayerState.Idle:
+                //print("Idle");
+
                 UpdateIdle();
                 break;
             case PlayerState.Walking:
+                //print("Walking");
+
                 UpdateWalking();
                 break;
             case PlayerState.Jumping:
+                //print("Jumping");
                 UpdateJumping();
                 break;
             case PlayerState.Attacking:
+                //print("Attacking");
                 UpdateAttacking();
                 break;
         }
@@ -170,17 +179,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+
+    private void OnTriggerEnter(Collider other) 
     {
-        if (other.collider.CompareTag("Ship") && _verticalVelocity < 0.1f)
+        if (other.gameObject.CompareTag("Ship") && _verticalVelocity < 0.1f)
         {
             _isGrounded = true;
         }
     }
 
-    private void OnCollisionExit(Collision other)
+    private void OnTriggerExit(Collider other)
     {
-        if (other.collider.CompareTag("Ship"))
+        if (other.gameObject.CompareTag("Ship"))
         {
             _isGrounded = false;
         }
