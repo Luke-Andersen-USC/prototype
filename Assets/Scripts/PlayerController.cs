@@ -86,9 +86,12 @@ public class PlayerController : MonoBehaviour
         //characterController.Move(_verticalVelocity * Time.deltaTime * shipDeckTransform.up);
         _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
 
-        //gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 0.5f, gameObject.transform.localPosition.z);
-        //gameObject.transform.localRotation = Quaternion.identity;
+        if (_isGrounded) 
+        {
+            //gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 0.5f, gameObject.transform.localPosition.z);
+        }
 
+        //gameObject.transform.localRotation = Quaternion.identity;
 
         if (i_interact.ReadValue<float>() > 0.1f)
         {
