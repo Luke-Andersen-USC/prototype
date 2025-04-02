@@ -197,9 +197,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 8
-  jumpForce: 20
+  jumpSpeed: 15
   rotationSpeed: 90
-  gravity: -10
+  gravity: -30
   PlayerInput: {fileID: 0}
   m_inputAsset: {fileID: 0}
   m_player:
@@ -226,7 +226,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
+  m_Height: 3
   m_Radius: 0.5
   m_SlopeLimit: 70
   m_StepOffset: 0.3

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    enum PlayerState
+    public enum PlayerState
     {
         Idle,
         Walking,
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     // Movement
     public float moveSpeed = 5f;
-    public float jumpForce = 5f;
+    public float jumpSpeed = 5f;
     public float rotationSpeed = 90f;
     public float gravity = -9.81f;
     
@@ -46,12 +46,6 @@ public class PlayerController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _characterController.enableOverlapRecovery = true;
     }
-
-    private void Start()
-    {
-        //throw new NotImplementedException();
-    }
-
     void Update()
     {
         ProcessInput();
@@ -68,26 +62,18 @@ public class PlayerController : MonoBehaviour
 
         if (_isGrounded)
         {
-            _verticalVelocity = 0.5f;
+            _verticalVelocity = 0.0f;
+
+            transform.transform.localPosition = new Vector3(transform.transform.localPosition.x, 0.5f,
+                transform.transform.localPosition.z);
         }
         else
         {
             _verticalVelocity += gravity * Time.deltaTime;
+            _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
         }
         
-        /*
-        LayerMask shipMask = LayerMask.GetMask("Ship");
-        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, -transform.up);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, 20.0f, shipMask))
-        {
-            //transform.position = hitInfo.point;
-        }
-        */
-        
-        //characterController.Move(_verticalVelocity * Time.deltaTime * shipDeckTransform.up);
-        _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
-
-        //gameObject.transform.localRotation = Quaternion.identity;
+        //_characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
 
         if (i_interact.ReadValue<float>() > 0.1f)
         {
@@ -112,6 +98,9 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerState.Attacking:
                 UpdateAttacking();
+                break;
+            case PlayerState.Falling:
+                UpdateFalling();
                 break;
         }
     }
@@ -172,6 +161,16 @@ public class PlayerController : MonoBehaviour
             SwitchState(PlayerState.Idle);
         }
     }
+    
+    private void UpdateFalling()
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.normalizedTime >= 1.0f) 
+        {
+            SwitchState(PlayerState.Idle);
+        }
+    }
 
 
     private void OnTriggerEnter(Collider other) 
@@ -190,7 +189,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void SwitchState(PlayerState state)
+    public void SwitchState(PlayerState state)
     {
         Debug.Log("Switched state to: " + state);
         
@@ -200,7 +199,7 @@ public class PlayerController : MonoBehaviour
         if (state == PlayerState.Jumping)
         {
             _isGrounded = false;
-            _verticalVelocity = 10.0f;
+            _verticalVelocity = jumpSpeed;
         }
     }
 
@@ -259,12 +258,10 @@ public class PlayerController : MonoBehaviour
     
     #endregion
 
-    public PlayerInput PlayerInput;
-    public InputDevice InputDevice;
-
-    [Header("Input Variables")]
-    public InputActionAsset m_inputAsset;
-    public InputActionMap m_player;
+    [HideInInspector] public PlayerInput PlayerInput;
+    [HideInInspector] public InputDevice InputDevice;
+    [HideInInspector] public InputActionAsset m_inputAsset;
+    [HideInInspector] public InputActionMap m_player;
     
     private InputAction i_move;
     private InputAction i_attack;

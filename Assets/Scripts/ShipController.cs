@@ -45,6 +45,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private List<Tile> startingBalloonTiles;
 
     [Header("Ship UI")]
+    [SerializeField] private Canvas afloatUI;
     [SerializeField] private TextMeshProUGUI pitchDeltaGUI;
     [SerializeField] private TextMeshProUGUI rollDeltaGUI;
     [SerializeField] private Slider pitchDeltaSlider;
@@ -55,6 +56,8 @@ public class ShipController : MonoBehaviour
     // NOT SERIALIZED
     [HideInInspector] public float pitchDelta { get; private set; }
     [HideInInspector] public float rollDelta { get; private set; }
+
+    private bool _isAfloat = true;
     
     private Quaternion originalRotation;
     private float rollVelocity = 0f;
@@ -97,14 +100,7 @@ public class ShipController : MonoBehaviour
             Players.Add(player);
         }
 
-        pitchDeltaSlider.minValue = -1.0f;
-        pitchDeltaSlider.maxValue = 1.0f;
-
-        rollDeltaSlider.minValue = -1.0f;
-        rollDeltaSlider.maxValue = 1.0f;
-
         originalRotation = shipDeck.transform.rotation;
-
 
         foreach (Tile tile in startingBalloonTiles)
         {
@@ -114,16 +110,20 @@ public class ShipController : MonoBehaviour
 
     private void Update()
     {
-        UpdateDeltas();
-        if (_useLegacy)
+        if (_isAfloat)
         {
-            UpdateTiltLegacy();
+            UpdateDeltas();
+            if (_useLegacy)
+            {
+                UpdateTiltLegacy();
+            }
+            else
+            {
+                UpdateTilt();
+            }
+            CheckAfloat();
+            UpdateUI();
         }
-        else
-        {
-            UpdateTilt();
-        }
-        UpdateUI();
     }
 
     private void UpdateDeltas()
@@ -214,6 +214,18 @@ public class ShipController : MonoBehaviour
         shipDeck.transform.rotation *= rollRotation * pitchRotation;
         shipDeck.transform.rotation = Quaternion.Euler(shipDeck.transform.rotation.eulerAngles.x, 0f, shipDeck.transform.rotation.eulerAngles.z);
     }
+
+    private void CheckAfloat()
+    {
+        float rollDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.z);
+        //float pitchDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.x);
+        float offset = 10.0f;
+        if (rollDiff >= maxRollAngle - offset)
+        {
+            Debug.Log("Upturning ship!");
+            KillShip();
+        }
+    }
     public void PlaceBalloon(Tile tile)
     {
         GameObject balloon = Instantiate(PlayerManager.Instance.BalloonsPrefab, tile.transform.position, Quaternion.identity);
@@ -227,6 +239,24 @@ public class ShipController : MonoBehaviour
         Balloons.Remove(balloon);
         Destroy(balloon);
     }
+
+    private void KillShip()
+    {
+        _isAfloat = false;
+        while (Balloons.Count > 0)
+        {
+            PopBalloon(Balloons[0]);
+        }
+        shipDeck.GetComponent<Rigidbody>().useGravity = true;
+
+        foreach (GameObject player in Players)
+        {
+            player.transform.SetParent(null);
+            player.GetComponent<PlayerController>().SwitchState(PlayerController.PlayerState.Falling);
+        }
+        
+        afloatUI.enabled = false;
+    }
     
     
 
@@ -235,7 +265,7 @@ public class ShipController : MonoBehaviour
         pitchDeltaGUI.text = "PitchDelta: " + pitchDelta;
         rollDeltaGUI.text = "RollDelta " + rollDelta;
 
-        pitchDeltaSlider.value = pitchDelta;
-        rollDeltaSlider.value = rollDelta;
+        pitchDeltaSlider.value = -pitchDelta;
+        rollDeltaSlider.value = -rollDelta;
     }
 }
