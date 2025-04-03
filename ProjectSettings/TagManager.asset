@@ -10,6 +10,7 @@ TagManager:
   - Board
   - NonDiegetic
   - Tile
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Ship
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 

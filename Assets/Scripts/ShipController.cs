@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -38,11 +39,13 @@ public class ShipController : MonoBehaviour
     [SerializeField] private float _playerWeight = 5.0f;
     [SerializeField] private float _balloonWeight = 1.0f;
     [SerializeField] private float _objectWeight = 1.0f;
+    [SerializeField] private float _enemyWeight = 1.0f;
     
     [Header("Ship General")]
     [SerializeField] private GameObject shipDeck;
     [SerializeField] private GameObject shipCenter;
     [SerializeField] private List<Tile> startingBalloonTiles;
+    [SerializeField] private bool _cobDisplay = false;
 
     [Header("Ship UI")]
     [SerializeField] private Canvas afloatUI;
@@ -51,6 +54,9 @@ public class ShipController : MonoBehaviour
     [SerializeField] private Slider pitchDeltaSlider;
     [SerializeField] private Slider rollDeltaSlider;
     [SerializeField] private GameObject centerOfBalanceDebug;
+    
+    [Header("Retry UI")]
+    [SerializeField] private Canvas retryUI;
     
     
     // NOT SERIALIZED
@@ -65,13 +71,16 @@ public class ShipController : MonoBehaviour
     private float pitchVelocity = 0f;
     private float pitchAcceleration = 0f;
     
-    [HideInInspector] public List<GameObject> Players = new List<GameObject>();
+    //[HideInInspector] public List<GameObject> Players = new List<GameObject>();
     [HideInInspector] public List<GameObject> Balloons = new List<GameObject>();
     [HideInInspector] public List<GameObject> WeightedObjects = new List<GameObject>();
 
     private void Awake()
     {
         Instance = this;
+
+        afloatUI.enabled = true;
+        retryUI.enabled = false;
     }
 
     private void Start()
@@ -83,29 +92,14 @@ public class ShipController : MonoBehaviour
         {
             WeightedObjects.Add(obj);
         }
-        
-        GameObject[] balloons = GameObject.FindGameObjectsWithTag("Balloon");
-        Balloons.Clear();
-
-        foreach (GameObject balloon in balloons)
-        {
-            Balloons.Add(balloon);
-        }
-        
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        Players.Clear();
-
-        foreach (GameObject player in players)
-        {
-            Players.Add(player);
-        }
-
         originalRotation = shipDeck.transform.rotation;
 
         foreach (Tile tile in startingBalloonTiles)
         {
             PlaceBalloon(tile);
         }
+
+        centerOfBalanceDebug.SetActive(_cobDisplay);
     }
 
     private void Update()
@@ -129,10 +123,28 @@ public class ShipController : MonoBehaviour
     private void UpdateDeltas()
     {
         Vector2 centerOfBalance = Vector2.zero;
-        
-        foreach (GameObject player in Players)
+
+        List<GameObject> players = PlayerManager.Instance.Players;
+        List<GameObject> enemies = EnemyManager.Instance.Enemies;
+
+        int numGroundedPlayers = 0;
+        foreach (GameObject player in players)
         {
-            centerOfBalance += new Vector2(player.transform.localPosition.x, player.transform.localPosition.z) * _playerWeight;
+            if (player.GetComponent<PlayerController>().IsGrounded)
+            {
+                centerOfBalance += new Vector2(player.transform.localPosition.x, player.transform.localPosition.z) * _playerWeight;
+                numGroundedPlayers++;
+            }
+        }
+
+        int numGroundedEnemies = 0;
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy.GetComponent<Skeleton>().IsGrounded)
+            {
+                centerOfBalance += new Vector2(enemy.transform.localPosition.x, enemy.transform.localPosition.z) * _enemyWeight;
+                numGroundedEnemies++;
+            }
         }
 
         foreach (GameObject balloon in Balloons)
@@ -140,14 +152,13 @@ public class ShipController : MonoBehaviour
             centerOfBalance += new Vector2(-balloon.transform.localPosition.x, -balloon.transform.localPosition.z) * _balloonWeight;
         }
         
-        
         foreach (GameObject obj in WeightedObjects)
         {
             centerOfBalance += new Vector2(obj.transform.localPosition.x, obj.transform.localPosition.z) * _objectWeight;
         }
         
 
-        if (centerOfBalance.magnitude > 0.01f) centerOfBalance /= (Players.Count * _playerWeight + Balloons.Count * _balloonWeight + WeightedObjects.Count * _objectWeight);
+        if (centerOfBalance.magnitude > 0.01f) centerOfBalance /= (numGroundedPlayers * _playerWeight + Balloons.Count * _balloonWeight + WeightedObjects.Count * _objectWeight + numGroundedEnemies * _enemyWeight);
         
         centerOfBalanceDebug.transform.position = shipCenter.transform.position + shipDeck.transform.forward * centerOfBalance.y +
                                                   shipDeck.transform.right * centerOfBalance.x + shipDeck.transform.up * 1.5f;
@@ -247,15 +258,30 @@ public class ShipController : MonoBehaviour
         {
             PopBalloon(Balloons[0]);
         }
+        shipDeck.GetComponent<Rigidbody>().isKinematic = false;
         shipDeck.GetComponent<Rigidbody>().useGravity = true;
 
-        foreach (GameObject player in Players)
+        List<GameObject> players = PlayerManager.Instance.Players;
+        foreach (GameObject player in players)
         {
             player.transform.SetParent(null);
             player.GetComponent<PlayerController>().SwitchState(PlayerController.PlayerState.Falling);
         }
         
+        List<GameObject> enemies = EnemyManager.Instance.Enemies;
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.transform.SetParent(null);
+            enemy.GetComponent<Skeleton>().SwitchState(Skeleton.EnemyState.Falling);
+        }
+        
         afloatUI.enabled = false;
+        retryUI.enabled = true;
+    }
+    
+    public void ReloadLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     
     

@@ -117,6 +117,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a9e3bc5e4346c413baaf42a823bff66c, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -200,6 +204,8 @@ MonoBehaviour:
   jumpSpeed: 15
   rotationSpeed: 90
   gravity: -30
+  attackDistance: 3
+  attackRadius: 3
   PlayerInput: {fileID: 0}
   m_inputAsset: {fileID: 0}
   m_player:

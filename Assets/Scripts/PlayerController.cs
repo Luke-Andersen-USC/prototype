@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
+using BehaviorDesigner.Runtime.Tasks.Unity.UnityPhysics;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,15 +17,17 @@ public class PlayerController : MonoBehaviour
         Falling
     }
     
-    // References
-
-    // Movement
+    [Header("Movement")]
     public float moveSpeed = 5f;
     public float jumpSpeed = 5f;
     public float rotationSpeed = 90f;
     public float gravity = -9.81f;
     
-    private bool _isGrounded = false;
+    [Header("Attacking")]
+    public float attackDistance = 2f;
+    public float attackRadius = 2f;
+    
+    public bool IsGrounded = false;
     private float _verticalVelocity = 0f;
     
     // Input
@@ -48,6 +51,12 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+        if (_currentState == PlayerState.Falling)
+        {
+            UpdateFalling();
+            return;
+        }
+        
         ProcessInput();
 
         Transform shipDeckTransform = PlayerManager.Instance.ShipDeck.transform;
@@ -60,7 +69,7 @@ public class PlayerController : MonoBehaviour
             _characterController.Move(Time.deltaTime * moveSpeed * move);
         }
 
-        if (_isGrounded)
+        if (IsGrounded)
         {
             _verticalVelocity = 0.0f;
 
@@ -72,8 +81,6 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity += gravity * Time.deltaTime;
             _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
         }
-        
-        //_characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
 
         if (i_interact.ReadValue<float>() > 0.1f)
         {
@@ -98,9 +105,6 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerState.Attacking:
                 UpdateAttacking();
-                break;
-            case PlayerState.Falling:
-                UpdateFalling();
                 break;
         }
     }
@@ -146,7 +150,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateJumping()
     {
-        if (_isGrounded)
+        if (IsGrounded)
         {
             SwitchState(PlayerState.Idle);
         }
@@ -155,7 +159,21 @@ public class PlayerController : MonoBehaviour
     private void UpdateAttacking()
     {
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-
+        
+        RaycastHit hitInfo;
+        if (Physics.SphereCast(transform.position, attackRadius, transform.forward, out hitInfo, attackDistance))
+        {
+            if (hitInfo.collider.CompareTag("Enemy"))
+            {
+                Skeleton sk = hitInfo.collider.gameObject.GetComponent<Skeleton>();
+                if (sk)
+                {
+                    Debug.Log("Die should be called!");
+                    sk.Die();
+                } 
+            }
+        }
+        
         if (stateInfo.normalizedTime >= 1.0f) 
         {
             SwitchState(PlayerState.Idle);
@@ -177,7 +195,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ship") && _verticalVelocity < 0.1f)
         {
-            _isGrounded = true;
+            IsGrounded = true;
         }
     }
 
@@ -185,7 +203,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ship"))
         {
-            _isGrounded = false;
+            IsGrounded = false;
         }
     }
 
@@ -198,7 +216,7 @@ public class PlayerController : MonoBehaviour
 
         if (state == PlayerState.Jumping)
         {
-            _isGrounded = false;
+            IsGrounded = false;
             _verticalVelocity = jumpSpeed;
         }
     }
@@ -245,7 +263,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    
     private void PlaceDownBalloon()
     {
         if (_selectedTile != null)

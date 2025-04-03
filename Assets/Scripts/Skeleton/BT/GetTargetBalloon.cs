@@ -25,4 +25,10 @@ public class GetTargetBalloon : Action
         
         _targetBalloon.SetValue(nearestBalloon);
     }
+
+    public override void OnEnd()
+    {
+        Skeleton sk = gameObject.GetComponent<Skeleton>();
+        sk.SwitchState(Skeleton.EnemyState.Walking);
+    }
 }
