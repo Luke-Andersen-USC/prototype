@@ -87,6 +87,7 @@ public class ShipController : MonoBehaviour
     private float pitchAcceleration = 0f;
     private float vertVelocity = 0f;
     private float vertAcceleration = 0f;
+    
     [HideInInspector] public List<GameObject> Balloons = new List<GameObject>();
     [HideInInspector] public List<GameObject> WeightedObjects = new List<GameObject>();
 
@@ -208,13 +209,13 @@ public class ShipController : MonoBehaviour
     private void UpdateHeight()
     {
         float targetHeight = minHeight + (maxHeight - minHeight) * balloonSlider.value;
-        float deltaHeight = Mathf.Abs(targetHeight - shipDeck.transform.position.y);
-        //vertAcceleration = -vertK * deltaHeight - vertD * vertVelocity;
+        float deltaHeight = shipDeck.transform.localPosition.y - targetHeight;
+        vertAcceleration = -vertK * deltaHeight - vertD * vertVelocity;
         vertVelocity += vertAcceleration * Time.deltaTime;
-        float newHeight = shipDeck.transform.position.y + vertVelocity * Time.deltaTime;
+        float newHeight = shipDeck.transform.localPosition.y + vertVelocity * Time.deltaTime;
 
         shipDeck.transform.position =
-            new Vector3(shipDeck.transform.position.x, newHeight, shipDeck.transform.position.z);
+            new Vector3(shipDeck.transform.localPosition.x, newHeight, shipDeck.transform.localPosition.z);
     }
 
     // LEGACY - keeping around it case we want to revert
@@ -304,7 +305,7 @@ public class ShipController : MonoBehaviour
         {
             if (player.GetComponent<PlayerController>().IsGrounded)
             {
-                otherTotalWeight -= _playerWeight;
+                otherTotalWeight += _playerWeight;
             }
         }
         
@@ -312,24 +313,19 @@ public class ShipController : MonoBehaviour
         {
             if (enemy.GetComponent<Skeleton>().IsGrounded)
             {
-                otherTotalWeight -= _enemyWeight;
+                otherTotalWeight += _enemyWeight;
             }
         }
         
         foreach (GameObject obj in WeightedObjects)
         {
-            otherTotalWeight -= _objectWeight;
+            otherTotalWeight += _objectWeight;
         }
 
         otherTotalWeight *= otherWeightMod;
 
         float currentWeight = balloonTotalWeight - otherTotalWeight;
         float f = (currentWeight - minWeight) / (maxWeight - minWeight);
-
-        if (f <= 0.05f)
-        {
-            Debug.Log("Balloon weight: " + balloonTotalWeight + ", otherTotalWeight:" + otherTotalWeight);
-        }
 
         balloonSlider.value = Mathf.Clamp(f, 0f, 1f);
     }
