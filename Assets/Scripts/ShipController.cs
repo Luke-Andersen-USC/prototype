@@ -10,8 +10,9 @@ using Object = UnityEngine.Object;
 public class ShipController : MonoBehaviour
 {
     [HideInInspector] public static ShipController Instance;
-    
-    [Header("Roll Vars")]
+
+    [Header("Roll Vars")] 
+    [SerializeField] private float deathRollAngle = 70.0f;
     [SerializeField] float maxRollAngle = 45.0f;
     [SerializeField] float rollK = 1.0f;
     [SerializeField] float rollD = 1.0f;
@@ -34,6 +35,19 @@ public class ShipController : MonoBehaviour
 
     [Header("Ship Tilt Mode")] 
     [SerializeField] private bool _useLegacy = false;
+    
+    [Header("Balloon Vars")]
+    [SerializeField] private float minWeight = 0f;
+    [SerializeField] private float maxWeight = 10f;
+    [SerializeField] private float balloonWeightMod = 5f;
+    [SerializeField] private float otherWeightMod = 0.5f;
+    
+    [Header("Height Vars")]
+    [SerializeField] private float deathHeight = -7f;
+    [SerializeField] private float minHeight = 5f;
+    [SerializeField] private float maxHeight = -7.5f;
+    [SerializeField] private float vertK = 1f;
+    [SerializeField] private float vertD = 1f;
 
     [Header("Weights")]
     [SerializeField] private float _playerWeight = 5.0f;
@@ -53,6 +67,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rollDeltaGUI;
     [SerializeField] private Slider pitchDeltaSlider;
     [SerializeField] private Slider rollDeltaSlider;
+    [SerializeField] private Slider balloonSlider;
     [SerializeField] private GameObject centerOfBalanceDebug;
     
     [Header("Retry UI")]
@@ -70,8 +85,8 @@ public class ShipController : MonoBehaviour
     private float rollAcceleration = 0f;
     private float pitchVelocity = 0f;
     private float pitchAcceleration = 0f;
-    
-    //[HideInInspector] public List<GameObject> Players = new List<GameObject>();
+    private float vertVelocity = 0f;
+    private float vertAcceleration = 0f;
     [HideInInspector] public List<GameObject> Balloons = new List<GameObject>();
     [HideInInspector] public List<GameObject> WeightedObjects = new List<GameObject>();
 
@@ -107,6 +122,7 @@ public class ShipController : MonoBehaviour
         if (_isAfloat)
         {
             UpdateDeltas();
+            CalculateBalloonValue();
             if (_useLegacy)
             {
                 UpdateTiltLegacy();
@@ -115,6 +131,7 @@ public class ShipController : MonoBehaviour
             {
                 UpdateTilt();
             }
+            UpdateHeight();
             CheckAfloat();
             UpdateUI();
         }
@@ -188,6 +205,18 @@ public class ShipController : MonoBehaviour
         shipDeck.transform.rotation = Quaternion.Euler(shipDeck.transform.rotation.eulerAngles.x, 0f, shipDeck.transform.rotation.eulerAngles.z);
     }
 
+    private void UpdateHeight()
+    {
+        float targetHeight = minHeight + (maxHeight - minHeight) * balloonSlider.value;
+        float deltaHeight = Mathf.Abs(targetHeight - shipDeck.transform.position.y);
+        //vertAcceleration = -vertK * deltaHeight - vertD * vertVelocity;
+        vertVelocity += vertAcceleration * Time.deltaTime;
+        float newHeight = shipDeck.transform.position.y + vertVelocity * Time.deltaTime;
+
+        shipDeck.transform.position =
+            new Vector3(shipDeck.transform.position.x, newHeight, shipDeck.transform.position.z);
+    }
+
     // LEGACY - keeping around it case we want to revert
     private void UpdateTiltLegacy()
     {
@@ -228,15 +257,20 @@ public class ShipController : MonoBehaviour
 
     private void CheckAfloat()
     {
-        float rollDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.z);
-        //float pitchDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.x);
-        float offset = 10.0f;
-        if (rollDiff >= maxRollAngle - offset)
+        float rollDiff = Mathf.Abs(Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.z));
+        if (rollDiff >= deathRollAngle)
         {
-            Debug.Log("Upturning ship!");
+            Debug.Log("rollDiff was" + rollDiff + " deathRollAngle was " + deathRollAngle + ", upturning ship!");
+            KillShip();
+        }
+        else if (shipDeck.transform.position.y <= deathHeight)
+        {
+            Debug.Log("height was" + shipDeck.transform.position.y + ", upturning ship!");
             KillShip();
         }
     }
+    
+    #region Balloons
     public void PlaceBalloon(Tile tile)
     {
         GameObject balloon = Instantiate(PlayerManager.Instance.BalloonsPrefab, tile.transform.position, Quaternion.identity);
@@ -250,6 +284,57 @@ public class ShipController : MonoBehaviour
         Balloons.Remove(balloon);
         Destroy(balloon);
     }
+
+    private void CalculateBalloonValue()
+    {
+        float balloonTotalWeight = 0f;
+        float otherTotalWeight = 0f;
+        
+        foreach (GameObject balloon in Balloons)
+        {
+            balloonTotalWeight += _balloonWeight;
+        }
+
+        balloonTotalWeight *= balloonWeightMod;
+        
+        List<GameObject> players = PlayerManager.Instance.Players;
+        List<GameObject> enemies = EnemyManager.Instance.Enemies;
+        
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PlayerController>().IsGrounded)
+            {
+                otherTotalWeight -= _playerWeight;
+            }
+        }
+        
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy.GetComponent<Skeleton>().IsGrounded)
+            {
+                otherTotalWeight -= _enemyWeight;
+            }
+        }
+        
+        foreach (GameObject obj in WeightedObjects)
+        {
+            otherTotalWeight -= _objectWeight;
+        }
+
+        otherTotalWeight *= otherWeightMod;
+
+        float currentWeight = balloonTotalWeight - otherTotalWeight;
+        float f = (currentWeight - minWeight) / (maxWeight - minWeight);
+
+        if (f <= 0.05f)
+        {
+            Debug.Log("Balloon weight: " + balloonTotalWeight + ", otherTotalWeight:" + otherTotalWeight);
+        }
+
+        balloonSlider.value = Mathf.Clamp(f, 0f, 1f);
+    }
+    
+    #endregion
 
     private void KillShip()
     {
@@ -283,8 +368,6 @@ public class ShipController : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    
-    
 
     private void UpdateUI()
     {
