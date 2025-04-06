@@ -11,6 +11,7 @@ TagManager:
   - NonDiegetic
   - Tile
   - Enemy
+  - SpareParts
   layers:
   - Default
   - TransparentFX

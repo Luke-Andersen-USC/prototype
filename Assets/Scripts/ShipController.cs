@@ -69,6 +69,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private Slider rollDeltaSlider;
     [SerializeField] private Slider balloonSlider;
     [SerializeField] private GameObject centerOfBalanceDebug;
+    [SerializeField] private TextMeshProUGUI sparePartsGUI;
     
     [Header("Retry UI")]
     [SerializeField] private Canvas retryUI;
@@ -91,6 +92,8 @@ public class ShipController : MonoBehaviour
     [HideInInspector] public List<GameObject> Balloons = new List<GameObject>();
     [HideInInspector] public List<GameObject> WeightedObjects = new List<GameObject>();
 
+    private PlayerManager _playerManager;
+
     private void Awake()
     {
         Instance = this;
@@ -101,6 +104,9 @@ public class ShipController : MonoBehaviour
 
     private void Start()
     {
+        //Needs to find the actual player associated with this UI
+        _playerManager = FindFirstObjectByType<PlayerManager>();
+
         GameObject[] weighted = GameObject.FindGameObjectsWithTag("Weighted");
         WeightedObjects.Clear();
 
@@ -369,7 +375,7 @@ public class ShipController : MonoBehaviour
     {
         pitchDeltaGUI.text = "PitchDelta: " + pitchDelta;
         rollDeltaGUI.text = "RollDelta " + rollDelta;
-
+        sparePartsGUI.text = "Spare parts held: " + _playerManager._sharedSpareParts.ToString();
         pitchDeltaSlider.value = -pitchDelta;
         rollDeltaSlider.value = -rollDelta;
     }

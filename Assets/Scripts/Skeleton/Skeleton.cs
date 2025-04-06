@@ -20,6 +20,8 @@ public class Skeleton : MonoBehaviour
     private EnemyState _currentState;
     private Animator _animator;
 
+    [SerializeField] GameObject _spareParts;
+
     public bool IsGrounded = false;
     
     void Awake()
@@ -42,6 +44,7 @@ public class Skeleton : MonoBehaviour
     {
         if (_currentState != EnemyState.Dead)
         {
+            Instantiate(_spareParts, gameObject.transform.position, Quaternion.identity);
             SwitchState(EnemyState.Dead);
             StartCoroutine(DestroySkeleton());
         }
