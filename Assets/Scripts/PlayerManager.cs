@@ -15,6 +15,7 @@ public class PlayerManager : MonoBehaviour
     
     public static PlayerManager Instance;
     [HideInInspector] public List<GameObject> Players;
+    public int _sharedSpareParts = 0;
 
     private void Awake()
     {

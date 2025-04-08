@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     // References
     private CharacterController _characterController;
     private Animator _animator;
+    private PlayerManager _playerManager;
     
     // Balloons
     private Tile _selectedTile = null;
@@ -47,6 +48,7 @@ public class PlayerController : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        _playerManager = FindAnyObjectByType<PlayerManager>();
         _characterController.enableOverlapRecovery = true;
     }
     void Update()
@@ -197,6 +199,10 @@ public class PlayerController : MonoBehaviour
         {
             IsGrounded = true;
         }
+        if (other.gameObject.CompareTag("SpareParts")) 
+        {
+            _playerManager._sharedSpareParts++;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -209,7 +215,7 @@ public class PlayerController : MonoBehaviour
 
     public void SwitchState(PlayerState state)
     {
-        Debug.Log("Switched state to: " + state);
+        //Debug.Log("Switched state to: " + state);
         
         _currentState = state;
         _animator.SetInteger("PlayerState", (int)_currentState);
@@ -266,8 +272,9 @@ public class PlayerController : MonoBehaviour
     
     private void PlaceDownBalloon()
     {
-        if (_selectedTile != null)
+        if (_selectedTile != null && _playerManager._sharedSpareParts > 0)
         {
+            _playerManager._sharedSpareParts--;
             ShipController.Instance.PlaceBalloon(_selectedTile);
             _selectedTile.Unhighlight();
         }

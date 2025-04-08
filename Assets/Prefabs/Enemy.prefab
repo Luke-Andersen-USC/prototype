@@ -175,6 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cacb7a4872e5f4d13a2407ebbaf55458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spareParts: {fileID: 13565676611929544, guid: 2d48cfe866eb1b64c8e618414bcf2dca, type: 3}
+  IsGrounded: 0
 --- !u!95 &5447543086821521004
 Animator:
   serializedVersion: 7
