@@ -16,11 +16,15 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
     [HideInInspector] public List<GameObject> Players;
     public int _sharedSpareParts = 0;
+    [SerializeField] private AudioClip collectScrapSound;
+    [SerializeField] private float _collectScrapVol = 1f;
 
+    private AudioSource _audioSource;
+    
     private void Awake()
     {
         Instance = this;
-        
+        _audioSource = GetComponent<AudioSource>();
         
         for (int i = 0; i < Gamepad.all.Count; i++)
         {
@@ -59,6 +63,7 @@ public class PlayerManager : MonoBehaviour
 
     public void AddSpareParts(int amount)
     {
+        _audioSource.PlayOneShot(collectScrapSound, _collectScrapVol);
         _sharedSpareParts += amount;
     }
     

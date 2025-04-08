@@ -38,8 +38,7 @@ public class SparePartsController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player")) 
         {
-            PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
-            _playerManager._sharedSpareParts++;
+            _playerManager.AddSpareParts(1);
             Destroy(gameObject);
         }
     }

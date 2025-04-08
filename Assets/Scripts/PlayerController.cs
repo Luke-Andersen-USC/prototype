@@ -28,12 +28,25 @@ public class PlayerController : MonoBehaviour
     [Header("Attacking")]
     public float attackDistance = 2f;
     public float attackRadius = 2f;
+    public float attackActivationDelay = 1f;
+    public float attackDuration = 1f;
 
     [Header("UI")]
     [SerializeField] private UnityEngine.UI.Image icon;
     [SerializeField] private Transform uiWorldPos;
     [SerializeField] private List<Sprite> icons;
+
+    [Header("SFX")] 
+    [SerializeField] private AudioClip swingSound;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private AudioClip jumpSound;
+    [SerializeField] private AudioClip jumpLandSound;
+    [SerializeField] private float _swingVol = 1f;
+    [SerializeField] private float _hitVol = 1f;
+    [SerializeField] private float _jumpVol = 1f;
+    [SerializeField] private float _jumpLandVol = 1f;
     
+    // Jumping
     [HideInInspector] public bool IsGrounded = false;
     private float _verticalVelocity = 0f;
     
@@ -49,17 +62,27 @@ public class PlayerController : MonoBehaviour
     
     // Balloons
     private Tile _selectedTile = null;
+    
+    // Attacking
+    private bool hasStartedSwing = false;
+    
+    // Audio
+    private AudioSource _audioSource;
 
     private PlayerState _currentState = PlayerState.Idle;
+    private float _timeInState = 0f;
     void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
         _playerManager = FindAnyObjectByType<PlayerManager>();
         _characterController.enableOverlapRecovery = true;
+        _audioSource = GetComponent<AudioSource>();
     }
     void Update()
     {
+        _timeInState += Time.deltaTime;
+        
         if (_currentState == PlayerState.Falling)
         {
             _verticalVelocity += gravity * Time.deltaTime;
@@ -146,14 +169,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleEnemyControlInput()
-    {
-        if (i_interact.ReadValue<float>() > 0.1f)
-        {
-            
-        }
-    }
-
     private void UpdateIdle()
     {
         if (_moveInput.magnitude > 0.1f)
@@ -196,23 +211,58 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAttacking()
     {
-        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        
-        RaycastHit hitInfo;
-        if (Physics.SphereCast(transform.position, attackRadius, transform.forward, out hitInfo, attackDistance))
+        /*
+         * AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+         
+        if (stateInfo.normalizedTime >= 1.0f) 
         {
-            if (hitInfo.collider.CompareTag("Enemy"))
+            SwitchState(PlayerState.Idle);
+        }
+        */
+
+        if (_timeInState > attackActivationDelay)
+        {
+            /*
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, attackRadius, transform.forward, out hitInfo, attackDistance))
             {
-                Skeleton sk = hitInfo.collider.gameObject.GetComponent<Skeleton>();
-                if (sk)
+                if (hitInfo.collider.CompareTag("Enemy"))
                 {
+                    Skeleton sk = hitInfo.collider.gameObject.GetComponent<Skeleton>();
+                    if (sk)
+                    {
+                        Debug.Log("Die should be called!");
+                        _audioSource.PlayOneShot(hitSound, _hitVol);
+                        sk.Die();
+                    } 
+                }
+            }
+            */
+
+            foreach (GameObject enemy in EnemyManager.Instance.Enemies)
+            {
+                Vector3 attackCenter = transform.position + transform.forward * attackDistance;
+                if (Vector3.Distance(attackCenter, enemy.transform.position) <= attackRadius)
+                {
+                    Skeleton sk = enemy.GetComponent<Skeleton>();
                     Debug.Log("Die should be called!");
-                    sk.Die();
-                } 
+                    if (sk && sk._currentState != Skeleton.EnemyState.Dead)
+                    {
+                        Debug.Log("Die is being called!");
+                        _audioSource.PlayOneShot(hitSound, _hitVol);
+                        sk.Die();
+                    }
+                }
+            }
+
+            if (!hasStartedSwing)
+            {
+                _audioSource.PlayOneShot(swingSound, _swingVol);
+                hasStartedSwing = true;
             }
         }
-        
-        if (stateInfo.normalizedTime >= 1.0f) 
+
+        if (_timeInState > attackDuration)
         {
             SwitchState(PlayerState.Idle);
         }
@@ -233,11 +283,11 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ship") && _verticalVelocity < 0.1f)
         {
+            if (!IsGrounded)
+            {
+                _audioSource.PlayOneShot(jumpLandSound, _jumpLandVol);
+            }
             IsGrounded = true;
-        }
-        if (other.gameObject.CompareTag("SpareParts")) 
-        {
-            _playerManager._sharedSpareParts++;
         }
     }
 
@@ -251,7 +301,7 @@ public class PlayerController : MonoBehaviour
 
     public void SwitchState(PlayerState state)
     {
-        //Debug.Log("Switched state to: " + state);
+        Debug.Log("Switching from " + _currentState + " state to " + state);
         
         _currentState = state;
         _animator.SetInteger("PlayerState", (int)_currentState);
@@ -260,7 +310,15 @@ public class PlayerController : MonoBehaviour
         {
             IsGrounded = false;
             _verticalVelocity = jumpSpeed;
+            _audioSource.PlayOneShot(jumpSound, _jumpVol);
         }
+
+        if (state == PlayerState.Attacking)
+        {
+            hasStartedSwing = false;
+        }
+
+        _timeInState = 0f;
     }
 
     #region Balloons

@@ -58,6 +58,7 @@ public class ShipController : MonoBehaviour
     [Header("Ship General")]
     [SerializeField] private GameObject shipDeck;
     [SerializeField] private GameObject shipCenter;
+    [SerializeField] private GameObject creakHolder;
     [SerializeField] private List<Tile> startingBalloonTiles;
     [SerializeField] private bool _cobDisplay = false;
 
@@ -76,6 +77,17 @@ public class ShipController : MonoBehaviour
     [Header("Retry UI")]
     [SerializeField] private Canvas retryUI;
     
+    [Header("SFX")] 
+    [SerializeField] private AudioClip levelLossSound;
+    [SerializeField] private AudioClip balloonPlantedSound;
+    [SerializeField] private AudioClip balloonPoppedSound;
+    [SerializeField] private float _lossVol = 1f;
+    [SerializeField] private float _balloonPlantedVol = 1f;
+    [SerializeField] private float _balloonPoppedVol = 1f;
+    
+    [SerializeField] private float creakVolMod = 1f;
+    [SerializeField] private float creakVelocityEnterThreshold = 6f;
+    [SerializeField] private float creakVelocityExitThreshold = 3f;
     
     // NOT SERIALIZED
     [HideInInspector] public float pitchDelta { get; private set; }
@@ -96,9 +108,15 @@ public class ShipController : MonoBehaviour
     [HideInInspector] public List<GameObject> Balloons = new List<GameObject>();
     [HideInInspector] public List<GameObject> WeightedObjects = new List<GameObject>();
 
+    private AudioSource _audioSource;
+    private AudioSource _creakAudioSource;
+
     private void Awake()
     {
         Instance = this;
+
+        _audioSource = GetComponent<AudioSource>();
+        _creakAudioSource = creakHolder.GetComponent<AudioSource>();
 
         afloatUI.enabled = true;
         retryUI.enabled = false;
@@ -140,6 +158,7 @@ public class ShipController : MonoBehaviour
             UpdateHeight();
             CheckAfloat();
             UpdateUI();
+            UpdateCreaking();
         }
     }
 
@@ -283,12 +302,16 @@ public class ShipController : MonoBehaviour
         balloon.transform.SetParent(shipDeck.transform);
         Balloons.Add(balloon);
         tile.Balloon = balloon;
+        
+        _audioSource.PlayOneShot(balloonPlantedSound, _balloonPlantedVol);
     }
     
     public void PopBalloon(GameObject balloon)
     {
         Balloons.Remove(balloon);
         Destroy(balloon);
+        
+        _audioSource.PlayOneShot(balloonPoppedSound, _balloonPoppedVol);
     }
 
     private void CalculateBalloonValue()
@@ -372,6 +395,9 @@ public class ShipController : MonoBehaviour
         
         afloatUI.enabled = false;
         retryUI.enabled = true;
+        
+        _audioSource.Stop();
+        _audioSource.PlayOneShot(levelLossSound, _lossVol);
     }
     
     public void ReloadLevel()
@@ -408,5 +434,23 @@ public class ShipController : MonoBehaviour
 
         float heightDiff = Mathf.Clamp((shipDeck.transform.position.y - minHeight) / (maxHeight - minHeight), 0f, 1f);
         balloonSlider.value = heightDiff;
+    }
+
+    private void UpdateCreaking()
+    {
+        if (_creakAudioSource.isPlaying)
+        {
+            float f = (Mathf.Abs(rollVelocity) - creakVelocityEnterThreshold) / (legacyMaxRollVelocity - creakVelocityEnterThreshold);
+            _creakAudioSource.volume = Mathf.Clamp(f, 0f, 1f) * creakVolMod;
+        }
+        
+        if (Mathf.Abs(rollVelocity) > creakVelocityEnterThreshold && !_creakAudioSource.isPlaying)
+        {
+            _creakAudioSource.Play();
+        }
+        else if (Mathf.Abs(rollVelocity) < creakVelocityExitThreshold)
+        {
+            _creakAudioSource.Pause();
+        }
     }
 }
