@@ -341,6 +341,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &575509167 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5202473859887423205, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+  m_PrefabInstance: {fileID: 9122295808826582702}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -749,6 +754,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1372132533}
     - target: {fileID: 6001002753574193392, guid: a903ea6b273fb410fb0f642289eee787, type: 3}
+      propertyPath: shipHandle
+      value: 
+      objectReference: {fileID: 575509167}
+    - target: {fileID: 6001002753574193392, guid: a903ea6b273fb410fb0f642289eee787, type: 3}
       propertyPath: rollDeltaGUI
       value: 
       objectReference: {fileID: 1617856074}
@@ -966,6 +975,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2361575797314168415, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2361575797314168415, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2666496688739935239, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -982,6 +999,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4179594416566555359, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4179594416566555359, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4751799098200398675, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1001,6 +1026,10 @@ PrefabInstance:
     - target: {fileID: 4933612941290035159, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5202473859887423205, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+      propertyPath: m_Name
+      value: Roll Handle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

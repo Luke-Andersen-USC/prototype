@@ -69,6 +69,8 @@ public class ShipController : MonoBehaviour
     [SerializeField] private Slider rollDeltaSlider;
     [SerializeField] private Slider balloonSlider;
     [SerializeField] private GameObject centerOfBalanceDebug;
+    [SerializeField] private GameObject shipHandle;
+    [SerializeField] private float shipHandleMaxTilt;
     
     [Header("Retry UI")]
     [SerializeField] private Canvas retryUI;
@@ -77,6 +79,7 @@ public class ShipController : MonoBehaviour
     // NOT SERIALIZED
     [HideInInspector] public float pitchDelta { get; private set; }
     [HideInInspector] public float rollDelta { get; private set; }
+    [HideInInspector] public float vertDelta { get; private set; }
 
     private bool _isAfloat = true;
     
@@ -85,6 +88,7 @@ public class ShipController : MonoBehaviour
     private float rollAcceleration = 0f;
     private float pitchVelocity = 0f;
     private float pitchAcceleration = 0f;
+    
     private float vertVelocity = 0f;
     private float vertAcceleration = 0f;
     
@@ -208,7 +212,7 @@ public class ShipController : MonoBehaviour
 
     private void UpdateHeight()
     {
-        float targetHeight = minHeight + (maxHeight - minHeight) * balloonSlider.value;
+        float targetHeight = minHeight + (maxHeight - minHeight) * vertDelta;
         float deltaHeight = shipDeck.transform.localPosition.y - targetHeight;
         vertAcceleration = -vertK * deltaHeight - vertD * vertVelocity;
         vertVelocity += vertAcceleration * Time.deltaTime;
@@ -327,7 +331,7 @@ public class ShipController : MonoBehaviour
         float currentWeight = balloonTotalWeight - otherTotalWeight;
         float f = (currentWeight - minWeight) / (maxWeight - minWeight);
 
-        balloonSlider.value = Mathf.Clamp(f, 0f, 1f);
+        vertDelta = Mathf.Clamp(f, 0f, 1f);
     }
     
     #endregion
@@ -371,6 +375,25 @@ public class ShipController : MonoBehaviour
         rollDeltaGUI.text = "RollDelta " + rollDelta;
 
         pitchDeltaSlider.value = -pitchDelta;
-        rollDeltaSlider.value = -rollDelta;
+        
+        float rollDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.z);
+        rollDeltaSlider.value = - rollDiff / deathRollAngle;
+        
+        float shipHandleRotation = 0f - rollDeltaSlider.value * shipHandleMaxTilt;
+        RectTransform rt = shipHandle.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            rt.rotation = Quaternion.Euler(0f, 0f, shipHandleRotation);
+            rt.transform.rotation = Quaternion.Euler(0f, 0f, shipHandleRotation);
+            shipHandle.transform.rotation = Quaternion.Euler(0f, 0f, shipHandleRotation);
+        }
+        else
+        {
+            Debug.LogError("Couldn't get rect transform from ship handle");
+        }
+        shipHandle.transform.rotation = Quaternion.Euler(0f, 0f, shipHandleRotation);
+
+        float heightDiff = Mathf.Clamp((shipDeck.transform.position.y - minHeight) / (maxHeight - minHeight), 0f, 1f);
+        balloonSlider.value = heightDiff;
     }
 }
