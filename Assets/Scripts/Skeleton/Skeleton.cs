@@ -21,6 +21,10 @@ public class Skeleton : MonoBehaviour
     private Animator _animator;
 
     [SerializeField] GameObject _spareParts;
+    
+    [Header("UI")]
+    [SerializeField] private UnityEngine.UI.Image icon;
+    [SerializeField] private Transform uiWorldPos;
 
     public bool IsGrounded = false;
     
@@ -38,6 +42,11 @@ public class Skeleton : MonoBehaviour
     private void Start()
     {
         SwitchState(EnemyState.Idle);
+    }
+
+    private void Update()
+    {
+        UpdateUI();
     }
 
     public void Die()
@@ -77,5 +86,11 @@ public class Skeleton : MonoBehaviour
             _currentState = state;
             _animator.SetInteger("EnemyState", (int)_currentState);
         }
+    }
+    
+    private void UpdateUI()
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(uiWorldPos.position);
+        icon.rectTransform.position = screenPos;
     }
 }

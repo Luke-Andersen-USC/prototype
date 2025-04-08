@@ -21,6 +21,7 @@ public class PlayerManager : MonoBehaviour
     {
         Instance = this;
         
+        
         for (int i = 0; i < Gamepad.all.Count; i++)
         {
             GameObject player = Instantiate(_playerPrefab, _playerSpawns[i]);
@@ -30,6 +31,7 @@ public class PlayerManager : MonoBehaviour
             if (pc != null)
             {
                 pc.SetupInput(Gamepad.all[i]);
+                pc.SetupUI(i);
             }
             
             Players.Add(player);
@@ -46,6 +48,7 @@ public class PlayerManager : MonoBehaviour
             if (pc != null)
             {
                 pc.SetupInput(Keyboard.current);
+                pc.SetupUI(0);
             }
             
             Players.Add(player);

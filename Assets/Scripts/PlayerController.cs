@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityPhysics;
+using Microsoft.Unity.VisualStudio.Editor;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,8 +28,13 @@ public class PlayerController : MonoBehaviour
     [Header("Attacking")]
     public float attackDistance = 2f;
     public float attackRadius = 2f;
+
+    [Header("UI")]
+    [SerializeField] private UnityEngine.UI.Image icon;
+    [SerializeField] private Transform uiWorldPos;
+    [SerializeField] private List<Sprite> icons;
     
-    public bool IsGrounded = false;
+    [HideInInspector] public bool IsGrounded = false;
     private float _verticalVelocity = 0f;
     
     // Input
@@ -105,6 +112,8 @@ public class PlayerController : MonoBehaviour
                 UpdateAttacking();
                 break;
         }
+
+        UpdateUI();
     }
 
     private void ProcessInput()
@@ -315,6 +324,24 @@ public class PlayerController : MonoBehaviour
     }
     
     #endregion
+
+    #region UI
+
+    public void SetupUI(int index)
+    {
+        if (index >= 0 && index < icons.Count)
+        {
+            icon.sprite = icons[index];
+        }
+    }
+    private void UpdateUI()
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(uiWorldPos.position);
+        icon.rectTransform.position = screenPos;
+    }
+    
+    #endregion
+    
 
     [HideInInspector] public PlayerInput PlayerInput;
     [HideInInspector] public InputDevice InputDevice;
