@@ -342,9 +342,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3826217800391003983}
     m_Modifications:
+    - target: {fileID: 343050724099255643, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1400283420730975405, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
       propertyPath: m_Name
       value: Ship Deck
+      objectReference: {fileID: 0}
+    - target: {fileID: 7351737583831524329, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8212425353495931865, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
       propertyPath: m_LocalPosition.x
