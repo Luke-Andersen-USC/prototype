@@ -334,6 +334,15 @@ public class ShipController : MonoBehaviour
 
         vertDelta = Mathf.Clamp(f, 0f, 1f);
     }
+
+    public void PopRandomBalloon()
+    {
+        if (Balloons.Count > 0)
+        {
+            int randIndex = UnityEngine.Random.Range(0, Balloons.Count);
+            PopBalloon(Balloons[randIndex]);
+        }
+    }
     
     #endregion
 

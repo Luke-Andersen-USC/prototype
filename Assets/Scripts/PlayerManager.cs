@@ -53,4 +53,14 @@ public class PlayerManager : MonoBehaviour
             Debug.LogWarning("No controller input detected- adding keyboard player");
         }
     }
+
+    public void AddSpareParts(int amount)
+    {
+        _sharedSpareParts += amount;
+    }
+    
+    public bool HasSpareParts()
+    {
+        return _sharedSpareParts > 0;
+    }
 }

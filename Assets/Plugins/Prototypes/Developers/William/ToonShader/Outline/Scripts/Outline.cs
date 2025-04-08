@@ -225,7 +225,15 @@ public class Outline : MonoBehaviour {
     //var groups = mesh.vertices.Select((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index)).GroupBy(pair => pair.Key);
 
     // Copy normals to a new list
-    var smoothNormals = new List<Vector3>(mesh.normals);
+    List<Vector3> smoothNormals;
+    if (mesh != null && mesh.normals != null)
+    {
+      smoothNormals = new List<Vector3>(mesh.normals);
+      return smoothNormals;
+    }
+
+    return null;
+    
 
     /*
     // Average normals for grouped vertices
@@ -251,8 +259,6 @@ public class Outline : MonoBehaviour {
       }
     }
     */
-
-    return smoothNormals;
   }
 
   void CombineSubmeshes(Mesh mesh, Material[] materials) {

@@ -55,6 +55,9 @@ public class PlayerController : MonoBehaviour
     {
         if (_currentState == PlayerState.Falling)
         {
+            _verticalVelocity += gravity * Time.deltaTime;
+            _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
+            
             UpdateFalling();
             return;
         }
@@ -83,15 +86,8 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity += gravity * Time.deltaTime;
             _characterController.Move(_verticalVelocity * Time.deltaTime * Vector3.up);
         }
-
-        if (i_interact.ReadValue<float>() > 0.1f)
-        {
-            SelectTileForBalloons();
-        }
-        else if (_selectedTile != null)
-        {
-            PlaceDownBalloon();
-        }
+        
+        HandleBalloonInput();
         
         
         switch (_currentState)
@@ -116,6 +112,37 @@ public class PlayerController : MonoBehaviour
         _moveInput = i_move.ReadValue<Vector2>();
         _isAttackPressed = i_attack.ReadValue<float>() > 0.1f;
         _isJumpPressed = i_jump.ReadValue<float>() > 0.1f;
+    }
+
+    private void HandleBalloonInput()
+    {
+        if (PlayerManager.Instance.HasSpareParts())
+        {
+            if (i_interact.ReadValue<float>() > 0.1f)
+            {
+                SelectTileForBalloons();
+            }
+            else
+            {
+                if (_selectedTile != null)
+                {
+                    PlaceDownBalloon();
+                }
+                _selectedTile = null;
+            }
+        }
+        else
+        {
+            _selectedTile = null;
+        }
+    }
+
+    private void HandleEnemyControlInput()
+    {
+        if (i_interact.ReadValue<float>() > 0.1f)
+        {
+            
+        }
     }
 
     private void UpdateIdle()
@@ -240,13 +267,16 @@ public class PlayerController : MonoBehaviour
             for (int y = 0; y < tiles.GetLength(1); y++)
             {
                 Tile tile = tiles[x, y];
+                
+                if (tile == null) continue;
+                
                 tile.Unhighlight();
-                 
+                
                 if (tile.Balloon != null) continue;
                 
                 Vector3 toTile = tile.transform.position - transform.position;
 
-                if (toTile.magnitude < 2.0f)
+                if (toTile.magnitude < 2.5f)
                 {
                     toTile.Normalize();
                     
@@ -261,7 +291,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        _selectedTile = closestTile;
+        if (closestTile != null)
+        {
+            _selectedTile = closestTile;
+        }
         if (_selectedTile != null) _selectedTile.Highlight();
         else
         {
@@ -292,6 +325,10 @@ public class PlayerController : MonoBehaviour
     private InputAction i_attack;
     private InputAction i_interact;
     private InputAction i_jump;
+    private InputAction i_spawnEnemy;
+    private InputAction i_killAllEnemies;
+    private InputAction i_addScrap;
+    private InputAction i_popRandomBalloon;
 
     public void SetupInput(InputDevice inputDevice)
     {
@@ -305,5 +342,41 @@ public class PlayerController : MonoBehaviour
         i_attack = m_player.FindAction("Attack");
         i_interact = m_player.FindAction("Interact");
         i_jump = m_player.FindAction("Jump");
+        
+        i_spawnEnemy = m_player.FindAction("SpawnEnemy");
+        i_killAllEnemies = m_player.FindAction("KillEnemies");
+        i_addScrap = m_player.FindAction("AddSpareParts");
+        i_popRandomBalloon = m_player.FindAction("PopRandomBalloon");
+        
+        i_spawnEnemy.performed += OnSpawnEnemyPressed;
+        i_killAllEnemies.performed += OnKillAllEnemiesPressed;
+        i_addScrap.performed += OnAddScrapPressed;
+        i_popRandomBalloon.performed += OnPopRandomBalloonPressed;
+        
+        i_spawnEnemy.Enable();
+        i_killAllEnemies.Enable();
+        i_addScrap.Enable();
+        i_popRandomBalloon.Enable();
     }
+    
+    private void OnSpawnEnemyPressed(InputAction.CallbackContext context)
+    {
+        EnemyManager.Instance.SpawnEnemy();
+    }
+    private void OnKillAllEnemiesPressed(InputAction.CallbackContext context)
+    {
+        EnemyManager.Instance.DestroyAllEnemies();
+    }
+    
+    private void OnAddScrapPressed(InputAction.CallbackContext context)
+    {
+        PlayerManager.Instance.AddSpareParts(4);
+    }
+    
+    private void OnPopRandomBalloonPressed(InputAction.CallbackContext context)
+    {
+        ShipController.Instance.PopRandomBalloon();
+    }
+
+    
 }

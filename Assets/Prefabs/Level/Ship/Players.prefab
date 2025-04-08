@@ -196,6 +196,7 @@ MonoBehaviour:
   ShipDeck: {fileID: 0}
   BalloonsPrefab: {fileID: 8488070876911882253, guid: 05efe77d2b7b24999964a53632729965, type: 3}
   Players: []
+  _sharedSpareParts: 4
 --- !u!1 &5172907621802025300
 GameObject:
   m_ObjectHideFlags: 0

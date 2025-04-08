@@ -13,7 +13,7 @@ public class EnemyManager : MonoBehaviour
     public GameObject ShipDeck;
 
     [Header("Spawning Vars")] 
-    [SerializeField] private bool _shouldSpawn;
+    [SerializeField] private bool _shouldSpawnOnTimer;
     [SerializeField, Range(0f, 10f)] private float _minSpawnTime;
     [SerializeField, Range(0f, 15f)] private float _maxSpawnTime;
     [SerializeField] private float _initialSpawnWait = 5f;
@@ -32,7 +32,7 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
-        if (_shouldSpawn)
+        if (_shouldSpawnOnTimer)
         {
             _spawnTimer += Time.deltaTime;
             if (_spawnTimer > _timeTillSpawn)
@@ -45,7 +45,7 @@ public class EnemyManager : MonoBehaviour
         
     }
 
-    private void SpawnEnemy()
+    public void SpawnEnemy()
     {
         GameObject enemy = Instantiate(_enemyPrefab, ParachuteSpawn);
         Enemies.Add(enemy);
@@ -55,5 +55,13 @@ public class EnemyManager : MonoBehaviour
     {
         Enemies.Remove(enemy);
         Destroy(enemy);
+    }
+
+    public void DestroyAllEnemies()
+    {
+        while (Enemies.Count > 0)
+        {
+            DestroyEnemy(Enemies[0]);
+        }
     }
 }
