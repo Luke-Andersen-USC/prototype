@@ -71,6 +71,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private GameObject centerOfBalanceDebug;
     [SerializeField] private GameObject shipHandle;
     [SerializeField] private float shipHandleMaxTilt;
+    [SerializeField] private TextMeshProUGUI sparePartsGUI;
     
     [Header("Retry UI")]
     [SerializeField] private Canvas retryUI;
@@ -374,6 +375,9 @@ public class ShipController : MonoBehaviour
         pitchDeltaGUI.text = "PitchDelta: " + pitchDelta;
         rollDeltaGUI.text = "RollDelta " + rollDelta;
 
+        sparePartsGUI.text = "Spare Parts: " + PlayerManager.Instance._sharedSpareParts;
+        
+        
         pitchDeltaSlider.value = -pitchDelta;
         
         float rollDiff = Mathf.DeltaAngle(0f, shipDeck.transform.rotation.eulerAngles.z);
