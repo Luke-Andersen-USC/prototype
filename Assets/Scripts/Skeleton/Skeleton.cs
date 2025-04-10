@@ -22,6 +22,7 @@ public class Skeleton : MonoBehaviour
     private AudioSource _audioSource;
 
     [SerializeField] GameObject _spareParts;
+    [SerializeField] GameObject _parachute;
     
     [Header("UI")]
     [SerializeField] private UnityEngine.UI.Image icon;
@@ -47,6 +48,8 @@ public class Skeleton : MonoBehaviour
         {
             Debug.LogWarning("No reference to bt for " + gameObject.name);
         }
+        
+        _parachute.SetActive(false);
     }
 
     private void Start()
@@ -116,5 +119,10 @@ public class Skeleton : MonoBehaviour
     {
         Vector3 screenPos = Camera.main.WorldToScreenPoint(uiWorldPos.position);
         icon.rectTransform.position = screenPos;
+    }
+
+    public void EnableParachute(bool isEnabled)
+    {
+        _parachute.SetActive(isEnabled);
     }
 }

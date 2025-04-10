@@ -22,6 +22,8 @@ public class FlyToDeck : Action
 
         _sk = gameObject.GetComponent<Skeleton>();
         _sk.SwitchState(Skeleton.EnemyState.Flying);
+        _sk.EnableParachute(true);
+        gameObject.transform.SetParent(EnemyManager.Instance.gameObject.transform);
     }
 
     public override TaskStatus OnUpdate()
@@ -41,9 +43,10 @@ public class FlyToDeck : Action
     public override void OnEnd()
     {
         gameObject.transform.position = _target.position;
-        gameObject.transform.SetParent(EnemyManager.Instance.gameObject.transform);
+        //gameObject.transform.SetParent(EnemyManager.Instance.gameObject.transform);
         
         _sk.SwitchState(Skeleton.EnemyState.Idle);
         _sk.IsGrounded = true;
+        _sk.EnableParachute(false);
     }
 }
