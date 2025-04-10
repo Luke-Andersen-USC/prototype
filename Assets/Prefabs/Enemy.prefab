@@ -208,6 +208,93 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1001 &588893042475556166
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3775547154239624987}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.97
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.145
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_Name
+      value: 3D_Model_Parachute_V2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+--- !u!1 &355013389496967191 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+  m_PrefabInstance: {fileID: 588893042475556166}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1127749729422752429 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 849086d9957df42e5bf2a4fe6eb67436, type: 3}
+  m_PrefabInstance: {fileID: 588893042475556166}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3742431227098820848
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -296,6 +383,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: d7e17914c07c14c6c8b5031bb48d2a16, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9165014057337093980}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: d7e17914c07c14c6c8b5031bb48d2a16, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1127749729422752429}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d7e17914c07c14c6c8b5031bb48d2a16, type: 3}
       insertIndex: -1
@@ -402,7 +492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentState: 0
   _spareParts: {fileID: 13565676611929544, guid: 2d48cfe866eb1b64c8e618414bcf2dca, type: 3}
-  _parachute: {fileID: 8393437667298747878}
+  _parachute: {fileID: 355013389496967191}
   icon: {fileID: 3601890690481711737}
   uiWorldPos: {fileID: 3395496305911185246}
   swingSound: {fileID: 8300000, guid: 612d9c3e02c5340c6a14feea19ad5088, type: 3}
@@ -620,16 +710,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: 3D_Model_Parachute
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9d3bae58b2e334d37962c7bd9f73bf11, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d3bae58b2e334d37962c7bd9f73bf11, type: 3}
---- !u!1 &8393437667298747878 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9d3bae58b2e334d37962c7bd9f73bf11, type: 3}
-  m_PrefabInstance: {fileID: 8699286278001432759}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9165014057337093980 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9d3bae58b2e334d37962c7bd9f73bf11, type: 3}
