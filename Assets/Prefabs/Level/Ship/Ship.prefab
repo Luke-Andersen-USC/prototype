@@ -71,8 +71,8 @@ MonoBehaviour:
   deathHeight: -9.9
   minHeight: -10
   maxHeight: 5
-  vertK: 0.5
-  vertD: 1
+  vertK: 1
+  vertD: 3
   _playerWeight: 5
   _balloonWeight: 2
   _objectWeight: 1
@@ -96,6 +96,7 @@ MonoBehaviour:
   shipHandle: {fileID: 0}
   shipHandleMaxTilt: 60
   sparePartsGUI: {fileID: 0}
+  sparePartsChangeGUI: {fileID: 0}
   retryUI: {fileID: 0}
   levelLossSound: {fileID: 8300000, guid: 73d0855e112b34d1fb70d116d54ec330, type: 3}
   balloonPlantedSound: {fileID: 8300000, guid: 51b501c5f50554a4ba907bbcb3fe9084, type: 3}
@@ -350,6 +351,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ship Deck
       objectReference: {fileID: 0}
+    - target: {fileID: 4549548992130327562, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ece81a522a07e406cadabc36d4dd085c, type: 2}
+    - target: {fileID: 4549548992130327562, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3898b787e41b843e19f633b9f40d4037, type: 2}
     - target: {fileID: 7351737583831524329, guid: 6af1342fb0d5c43b9a78bd63e4afc081, type: 3}
       propertyPath: m_IsActive
       value: 0

@@ -18,6 +18,7 @@ public class PlayerManager : MonoBehaviour
     public int _sharedSpareParts = 0;
     [SerializeField] private AudioClip collectScrapSound;
     [SerializeField] private float _collectScrapVol = 1f;
+    [SerializeField] private float _showSparePartsChangeDuration = 2f;
 
     private AudioSource _audioSource;
     
@@ -63,8 +64,12 @@ public class PlayerManager : MonoBehaviour
 
     public void AddSpareParts(int amount)
     {
-        _audioSource.PlayOneShot(collectScrapSound, _collectScrapVol);
+        if (amount > 0)
+        {
+            _audioSource.PlayOneShot(collectScrapSound, _collectScrapVol);
+        }
         _sharedSpareParts += amount;
+        StartCoroutine(ShipController.Instance.ShowSparePartsChange(_showSparePartsChangeDuration, amount));
     }
     
     public bool HasSpareParts()

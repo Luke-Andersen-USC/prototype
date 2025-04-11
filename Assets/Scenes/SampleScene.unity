@@ -893,6 +893,10 @@ PrefabInstance:
       propertyPath: pitchDeltaSlider
       value: 
       objectReference: {fileID: 1680683497}
+    - target: {fileID: 6001002753574193392, guid: a903ea6b273fb410fb0f642289eee787, type: 3}
+      propertyPath: sparePartsChangeGUI
+      value: 
+      objectReference: {fileID: 9122295808826582703}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1180,6 +1184,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+--- !u!114 &9122295808826582703 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3072198197155973408, guid: e1bcfb395bbc94651a0ec58d205ac7a7, type: 3}
+  m_PrefabInstance: {fileID: 9122295808826582702}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

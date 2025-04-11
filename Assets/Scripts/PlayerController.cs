@@ -372,9 +372,9 @@ public class PlayerController : MonoBehaviour
     
     private void PlaceDownBalloon()
     {
-        if (_selectedTile != null && _playerManager._sharedSpareParts > 0)
+        if (_selectedTile != null && _playerManager._sharedSpareParts > 1)
         {
-            _playerManager._sharedSpareParts--;
+            _playerManager.AddSpareParts(-2);
             ShipController.Instance.PlaceBalloon(_selectedTile);
             _selectedTile.Unhighlight();
         }

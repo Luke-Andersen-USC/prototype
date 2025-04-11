@@ -8,13 +8,11 @@ public class SparePartsController : MonoBehaviour
     PlayerManager _playerManager;
     [SerializeField] private float _playerMagnetDistance;
     [SerializeField] private float _playerMagnetSpeed;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _playerManager = FindFirstObjectByType<PlayerManager>();
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         float closestPlayerDistance = _playerMagnetDistance;

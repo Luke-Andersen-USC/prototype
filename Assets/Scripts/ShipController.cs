@@ -1,11 +1,9 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 public class ShipController : MonoBehaviour
 {
@@ -73,6 +71,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private GameObject shipHandle;
     [SerializeField] private float shipHandleMaxTilt;
     [SerializeField] private TextMeshProUGUI sparePartsGUI;
+    [SerializeField] private TextMeshProUGUI sparePartsChangeGUI;
     
     [Header("Retry UI")]
     [SerializeField] private Canvas retryUI;
@@ -135,14 +134,20 @@ public class ShipController : MonoBehaviour
 
         foreach (Tile tile in startingBalloonTiles)
         {
-            PlaceBalloon(tile);
+            PlaceBalloon(tile, false);
         }
 
         centerOfBalanceDebug.SetActive(_cobDisplay);
+        sparePartsChangeGUI.enabled = false;
     }
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.R))
+        {
+            ReloadLevel();
+        }
+        
         if (_isAfloat)
         {
             UpdateDeltas();
@@ -296,20 +301,23 @@ public class ShipController : MonoBehaviour
     }
     
     #region Balloons
-    public void PlaceBalloon(Tile tile)
+    public void PlaceBalloon(Tile tile, bool shouldPlaySound = true)
     {
         GameObject balloon = Instantiate(PlayerManager.Instance.BalloonsPrefab, tile.transform.position, Quaternion.identity);
         balloon.transform.SetParent(shipDeck.transform);
         Balloons.Add(balloon);
         tile.Balloon = balloon;
-        
-        _audioSource.PlayOneShot(balloonPlantedSound, _balloonPlantedVol);
+
+        if (shouldPlaySound)
+        {
+            _audioSource.PlayOneShot(balloonPlantedSound, _balloonPlantedVol);
+        }
     }
     
     public void PopBalloon(GameObject balloon)
     {
         Balloons.Remove(balloon);
-        Destroy(balloon);
+        balloon.GetComponent<Balloon>().Pop();
         
         _audioSource.PlayOneShot(balloonPoppedSound, _balloonPoppedVol);
     }
@@ -410,8 +418,7 @@ public class ShipController : MonoBehaviour
         pitchDeltaGUI.text = "PitchDelta: " + pitchDelta;
         rollDeltaGUI.text = "RollDelta " + rollDelta;
 
-        sparePartsGUI.text = "Spare Parts: " + PlayerManager.Instance._sharedSpareParts;
-        
+        sparePartsGUI.text = PlayerManager.Instance._sharedSpareParts.ToString();
         
         pitchDeltaSlider.value = -pitchDelta;
         
@@ -434,6 +441,30 @@ public class ShipController : MonoBehaviour
 
         float heightDiff = Mathf.Clamp((shipDeck.transform.position.y - minHeight) / (maxHeight - minHeight), 0f, 1f);
         balloonSlider.value = heightDiff;
+    }
+
+    public IEnumerator ShowSparePartsChange(float displayTime, int scrapChange)
+    {
+        sparePartsChangeGUI.text = PlayerManager.Instance._sharedSpareParts.ToString();
+
+        if (scrapChange >= 0)
+        {
+            sparePartsChangeGUI.color = Color.green;
+            sparePartsChangeGUI.text = "+" + scrapChange.ToString();
+        }
+        else
+        {
+            sparePartsChangeGUI.color = Color.red;
+            sparePartsChangeGUI.text = scrapChange.ToString();
+        }
+
+        sparePartsChangeGUI.enabled = true;
+        
+        yield return new WaitForSeconds(displayTime);
+
+        sparePartsChangeGUI.enabled = false;
+
+
     }
 
     private void UpdateCreaking()
